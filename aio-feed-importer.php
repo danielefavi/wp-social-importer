@@ -1,7 +1,7 @@
 <?php
 /*
     Plugin Name: WP Social Importer
-    Plugin URI: https://www.danielefavi.com/
+    Plugin URI: https://www.danielefavi.com/wp-social-importer/
     Description: Import news from Facebook, Twitter and Instagram
     Author: Daniele Favi
     Author URI: https://www.danielefavi.com/
