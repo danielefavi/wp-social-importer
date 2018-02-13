@@ -1,0 +1,116 @@
+.social-fieldset {
+	display: none;
+}
+.social-fieldset-submit {
+	text-align: right;
+	border-top: 1px solid #DDD;
+	padding-top: 10px;
+	margin-top: 30px;
+}
+.column-author {
+	font-weight: bold !important;
+}
+.accounts-table {
+	width:100%;
+}
+#minor-publishing {
+	padding:0px 20px 20px 20px;
+}
+.aioi-header .go-back-link {
+	text-align:right;
+	float:right;
+}
+.aioi-header h1 {
+	float:left;
+}
+.float-right {
+	float:right;
+}
+.float-left {
+	float:left;
+}
+.search-bar .search-field {
+	float:left;
+	padding:5px;
+}
+.search-bar .search-field-right {
+	float:right;
+	padding:5px;
+}
+.search-bar .search-field small {
+	font-weight:bold;
+	margin-left:5px;
+}
+.search-bar .search-field input[type=text] {
+	width:150px;
+}
+.search-bar .search-field input[type=number] {
+	width:80px;
+}
+#accounts-table td img {
+	width:100px;
+}
+.import-button {
+	text-align:right;
+}
+.column-checkbox {
+	width:4% !important;
+	padding-left: 0px !important;
+}
+.button {
+	margin-left: 15px !important;
+	margin-right: 15px;
+}
+.clear, .notice {
+	clear:both;
+}
+.delete-button {
+	color: #a00;
+	border: 0px;
+}
+.delete-button:hover {
+	color: red;
+	cursor: pointer;
+}
+.delete-button-account {
+	margin-left:20px;
+	float:left;
+}
+.large-input {
+	width:100%;
+	max-width: 450px;
+}
+.required-star {
+	color: red;
+	font-weight:bold;
+}
+.notes-small {
+	font-size:10px;
+}
+#accounts-table td {
+	display: table-cell;
+	word-wrap: break-word;
+}
+.action-links {
+	width:110px;
+}
+.show-mobile {
+	display:none;
+}
+
+@media (min-width:401px) and (max-width:950px) {
+	.hide-tablet {
+		display:none !important;
+	}
+}
+@media (max-width: 400px) {
+	.hide-mobile {
+		display:none !important;
+	}
+	.show-mobile {
+		display:block !important;
+	}
+	#accounts-table td, #accounts-table th, #accounts-table td, #accounts-table th {
+		padding: 8px 5px !important;
+	}
+}
