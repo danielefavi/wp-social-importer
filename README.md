@@ -3,6 +3,11 @@
 <p>
 <strong>WP Social Importer</strong> is a <strong>wordpress</strong> plugin that imports news from <strong>Facebook</strong>, <strong>Instagram</strong>, <strong>Twitter</strong> into your website. This plugin transforms automatically the news from your social networks into wordpress posts.
 </p>
+
+<p align="center">
+	<a href="https://www.danielefavi.com/wp-social-importer/">You can find more info at https://www.danielefavi.com/wp-social-importer/</a>
+</p>
+
 <p>
 The content of the news will automatically be processed: links, hash-tags and people you mention in the news will be converted into real links. The main picture of your news will be set as a featured image on the wordpress post.
 </p>
