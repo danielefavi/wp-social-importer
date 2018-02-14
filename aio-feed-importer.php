@@ -27,7 +27,7 @@ add_action('admin_menu', 'create_aioifeed_importer_menu_entry');
 function create_aioifeed_importer_menu_entry() {
 	$icon = plugins_url('images/arrow-87-16.png',__FILE__);
 
-    add_menu_page('Feed Importer', 'Feed Importer', 'edit_posts', 'accounts-aio-importer', 'aioifeed_importer_fnc__accounts', $icon);
+    add_menu_page('Social Importer', 'Social Importer', 'edit_posts', 'accounts-aio-importer', 'aioifeed_importer_fnc__accounts', $icon);
 
 	add_submenu_page( null,
 					 'Edit account',
