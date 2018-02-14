@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
+
 wp_enqueue_style('aioi-style', plugins_url('css/aioi_style.css',__FILE__));
 
 $success = $error = null;
@@ -30,19 +33,21 @@ if (isset($_POST['social_type'])) {
 
 		if (isset($accounts[$slug])) $error = 'The slug <b>'.$slug.'</b> already exists.';
 		else {
+			// taking all the account details from $_POST
 			$social_details = array();
 			$social_details['aioi_slug'] = $slug;
-			$social_details['aioi_name'] = $_POST['aioi_name'];
-			$social_details['aioi_post_type'] = $_POST['aioi_post_type'];
-			$social_details['aioi_social_type'] = $_POST['social_type'];
-			$social_details['aioi_post_comments'] = $_POST['aioi_post_comments'];
-			$social_details['aioi_post_status'] = $_POST['aioi_post_status'];
+			$social_details['aioi_name'] = aioifeed_sanitize($_POST['aioi_name']);
+			$social_details['aioi_post_type'] = aioifeed_sanitize($_POST['aioi_post_type']);
+			$social_details['aioi_social_type'] = aioifeed_sanitize($_POST['social_type']);
+			$social_details['aioi_post_comments'] = aioifeed_sanitize($_POST['aioi_post_comments']);
+			$social_details['aioi_post_status'] = aioifeed_sanitize($_POST['aioi_post_status']);
 			$social_details['aioi_created'] = date('Y-m-d H:i:s');
 
 			foreach ($_POST as $key => $value) {
+				// getting the field which field name starts with aioi_field_
 				if (strpos($key, 'aioi_field_') !== false) {
-					$key = str_replace('aioi_field_', '', $key);
-					$social_details[$key] = $value;
+					$key = str_replace('aioi_field_', '', aioifeed_sanitize($key));
+					$social_details[$key] = aioifeed_sanitize($value);
 				}
 			}
 
@@ -93,16 +98,16 @@ $sn_fields = aioifeed_get_social_structure();
 											foreach($accounts as $account) {
 												?>
 													<tr>
-														<td><?php echo $account['aioi_name']; ?></td>
-														<!-- td><?php echo $account['aioi_slug']; ?></td -->
-														<td><?php echo $account['aioi_social_type']; ?></td>
-														<td class="hide-mobile"><?php echo $account['aioi_post_type']; ?></td>
-														<!-- td><?php echo $account['aioi_created']; ?></td -->
+														<td><?php echo esc_html($account['aioi_name']); ?></td>
+														<!-- td><?php echo esc_html($account['aioi_slug']); ?></td -->
+														<td><?php echo esc_html($account['aioi_social_type']); ?></td>
+														<td class="hide-mobile"><?php echo esc_html($account['aioi_post_type']); ?></td>
+														<!-- td><?php echo esc_html($account['aioi_created']); ?></td -->
 														<td>
 															<div class="action-links">
-																<a href="<?php menu_page_url('accounts-import-aio-importer'); ?>&option_name=<?php echo $account['option_name']; ?>">IMPORT</a>
+																<a href="<?php menu_page_url('accounts-import-aio-importer'); ?>&option_name=<?php echo esc_html($account['option_name']); ?>">IMPORT</a>
 																&bull;
-																<a href="<?php menu_page_url('accounts-edit-aio-importer'); ?>&option_name=<?php echo $account['option_name']; ?>">EDIT</a>
+																<a href="<?php menu_page_url('accounts-edit-aio-importer'); ?>&option_name=<?php echo esc_html($account['option_name']); ?>">EDIT</a>
 															</div>
 														</td>
 													</tr>

@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
+
 /*
     Plugin Name: WP Social Importer
     Plugin URI: https://www.danielefavi.com/wp-social-importer/
@@ -15,7 +18,7 @@
 
 
 // creating the menu entry on the wordpress administration panel
-add_action('admin_menu', 'create_aioifeed_importer_menu_entry');
+add_action('admin_menu', 'aioifeed_importer_create_menu_entry');
 
 
 
@@ -24,7 +27,7 @@ add_action('admin_menu', 'create_aioifeed_importer_menu_entry');
  *
  * @return void
  */
-function create_aioifeed_importer_menu_entry() {
+function aioifeed_importer_create_menu_entry() {
 	$icon = plugins_url('images/arrow-87-16.png',__FILE__);
 
     add_menu_page('Social Importer', 'Social Importer', 'edit_posts', 'accounts-aio-importer', 'aioifeed_importer_fnc__accounts', $icon);
@@ -107,6 +110,36 @@ function aioifeed_get_socials() {
 	ksort($accounts);
 
 	return $accounts;
+}
+
+
+/**
+ * Handy function for validating and sanitizong a values from HTTP requests.
+ *
+ * @param string $elem
+ * @param string $type
+ * @return string
+ */
+function aioifeed_sanitize($elem, $type=null)
+{
+	// absolute integer
+	if ($type == 'absint') return absint($elem);
+
+	// array of string
+	else if ($type == 'array_of_str') {
+		$sanitized = array();
+
+		if (is_array($elem)) {
+			foreach ($elem as $key => $val) {
+				$sanitized[ absint($key) ] = sanitize_text_field( $val );
+			}
+		}
+
+		return $sanitized;
+	}
+
+	// if the type is not specified it returns the element sanitized
+	return sanitize_text_field( $elem );
 }
 
 
@@ -198,11 +231,11 @@ function aioifeed_get_post_from_identifier($feed_id, $account, $aioi_post_type='
 function aioifeed_get_social_structure($platform=null) {
 	$structure = array();
 
-	$structure['facebook'] = get_facebook_field_settings();
+	$structure['facebook'] = aioifeed_get_facebook_field_settings();
 
-	$structure['instagram'] = get_instagram_field_setting();
+	$structure['instagram'] = aioifeed_get_instagram_field_setting();
 
-	$structure['twitter'] = get_twitter_field_setting();
+	$structure['twitter'] = aioifeed_get_twitter_field_setting();
 
 	// $structure['linkedin']['fields'] = array(
 	// 	'access_token' => array('label' => 'Access Token', 'name' => 'access_token', 'type' => 'text')
@@ -223,7 +256,7 @@ function aioifeed_get_social_structure($platform=null) {
  *
  * @return array
  */
-function get_twitter_field_setting()
+function aioifeed_get_twitter_field_setting()
 {
 	$settings['fields'] = array(
 		'key' => array(
@@ -278,7 +311,7 @@ function get_twitter_field_setting()
  *
  * @return array
  */
-function get_instagram_field_setting()
+function aioifeed_get_instagram_field_setting()
 {
 	$settings['notes'] = '<b>NOTES:</b> in your Instagram APP setting make sure that:<br />
 										&bull; The option <i>Implicit Authentication</i> is checked<br />
@@ -328,7 +361,7 @@ function get_instagram_field_setting()
  *
  * @return array
  */
-function get_facebook_field_settings()
+function aioifeed_get_facebook_field_settings()
 {
 	$settings['fields'] = array(
 		 'key' => array(
@@ -428,6 +461,15 @@ function aioifeed_get_select($name, $type_select, $class='', $default=null) {
 }
 
 
+
+/**
+ * Return the javascript script for the redirect.
+ *
+ * @return string $link
+ * @return numeric $seconds
+ * @return boolean $echo
+ * @return string|null
+ */
 function aioifeed_echo_redirect_script($link, $seconds=5, $echo=true) {
 	$html =  '
 			<script>

@@ -1,4 +1,7 @@
 <?php
+	if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
+
 	wp_enqueue_style('aioi-style', plugins_url('css/aioi_style.css',__FILE__));
 
 	$account = $message = null;
@@ -6,7 +9,9 @@
 
 	// getting the account name from the URL parameter
 	if ( isset($_GET['option_name']) and (strpos($_GET['option_name'], 'aioi_importer_account_') !== false) ) {
-		$account = get_option($_GET['option_name']);
+		$option_name = aioifeed_sanitize($_GET['option_name']);
+
+		$account = get_option($option_name);
 	}
 	else {
 		// in case of not valid account name it redirects to the main account list
@@ -37,6 +42,7 @@
 
 			// checking if the required fields are completed
 			if (!empty($_POST['required_fields'])) {
+
 				foreach($_POST['required_fields'] as $req_field) {
 					if (empty($_POST[$req_field])) {
 						$message['result'] = 'error';
@@ -45,24 +51,25 @@
 						$error = true;
 					}
 				}
+
 			}
 
 			// if no errors occurred let's save
 			if (!$error) {
-				$account['aioi_name'] = $_POST['aioi_name'];
-				$account['aioi_post_type'] = $_POST['aioi_post_type'];
-				$account['aioi_post_status'] = $_POST['aioi_post_status'];
-				$account['aioi_post_comments'] = $_POST['aioi_post_comments'];
-				$account['aioi_categories'] = $_POST['aioi_categories'];
+				$account['aioi_name'] = aioifeed_sanitize($_POST['aioi_name']);
+				$account['aioi_post_type'] = aioifeed_sanitize($_POST['aioi_post_type']);
+				$account['aioi_post_status'] = aioifeed_sanitize($_POST['aioi_post_status']);
+				$account['aioi_post_comments'] = aioifeed_sanitize($_POST['aioi_post_comments']);
+				$account['aioi_categories'] = aioifeed_sanitize($_POST['aioi_categories']);
 
 				foreach ($_POST as $key => $value) {
 					if (strpos($key, 'aioi_field_') !== false) {
-						$key = str_replace('aioi_field_', '', $key);
-						$account[$key] = $value;
+						$key = str_replace('aioi_field_', '', aioifeed_sanitize($key));
+						$account[$key] = aioifeed_sanitize($value);
 					}
 				}
-				update_option($_POST['option_name_save'], $account);
-				$account = get_option($_GET['option_name']);
+				update_option( aioifeed_sanitize($_POST['option_name_save']), $account);
+				$account = get_option( $option_name );
 
 				$message['result'] = 'success';
 				$message['message'] = 'Account saved successfully';
@@ -72,7 +79,7 @@
 
 		// in case the user pressed the DELETE ACCOUNT button
 		else if (isset($_POST['delete_account'])) {
-			delete_option($_GET['option_name']);
+			delete_option($option_name);
 
 			// redirecting to the account list after 5 seconds
 			aioifeed_echo_redirect_script(menu_page_url('accounts-aio-importer', false), 5);
@@ -109,7 +116,7 @@
 			<?php
 				if (isset($_GET['option_name'])) {
 					?>
-						<a href="<?php menu_page_url('accounts-import-aio-importer'); ?>&option_name=<?php echo $_GET['option_name']; ?>" class="button button-primary button-large">Import from this account</a>
+						<a href="<?php menu_page_url('accounts-import-aio-importer'); ?>&option_name=<?php echo esc_html($option_name); ?>" class="button button-primary button-large">Import from this account</a>
 					<?php
 				}
 			?>
@@ -127,14 +134,14 @@
 		?>
 
 		<form method="post">
-			<p><strong>Slug:</strong> <?php echo $account['aioi_slug']; ?></p>
-			<p><strong>Social:</strong> <?php echo ucwords($account['aioi_social_type']); ?></p>
-			<p><strong>Created:</strong> <?php echo $account['aioi_created']; ?></p>
+			<p><strong>Slug:</strong> <?php echo esc_html($account['aioi_slug']); ?></p>
+			<p><strong>Social:</strong> <?php echo ucwords( esc_html($account['aioi_social_type']) ); ?></p>
+			<p><strong>Created:</strong> <?php echo esc_html($account['aioi_created']); ?></p>
 
 			<p>
 				<strong><span class="required-star"> * </span>Name</strong>
 				<br />
-				<input type="text" id="slug" name="aioi_name" value="<?php echo $account['aioi_name']; ?>" />
+				<input type="text" id="slug" name="aioi_name" value="<?php echo esc_html($account['aioi_name']); ?>" />
 				<input type="hidden" name="required_fields[]" value="aioi_name" />
 			</p>
 			<p>
@@ -155,7 +162,7 @@
 			<p>
 				<strong>Categories</strong>
 				<br />
-				<input type="text" name="aioi_categories" value="<?php echo (isset($account['aioi_categories']) ? $account['aioi_categories'] : null); ?>" />
+				<input type="text" name="aioi_categories" value="<?php echo (isset($account['aioi_categories']) ? esc_html($account['aioi_categories']) : null); ?>" />
 				<br />
 				<small>Category list comma separated</small>
 			</p>
@@ -177,13 +184,13 @@
 						<p>
 							<strong><?php echo $required_html . $field['label']; ?></strong>
 							<br />
-							<input type="<?php echo $field['type']; ?>" id="<?php echo $field['name']; ?>" name="aioi_field_<?php echo $field['name']; ?>" value="<?php echo $field_val; ?>" class="<?php echo $field['class']; ?>" />
+							<input type="<?php echo $field['type']; ?>" id="<?php echo $field['name']; ?>" name="aioi_field_<?php echo esc_html($field['name']); ?>" value="<?php echo esc_html($field_val); ?>" class="<?php echo $field['class']; ?>" />
 							<?php echo $hint_html; ?>
 						</p>
 					<?php
 				}
 			?>
-			<input type="hidden" name="option_name_save" value="<?php echo $_GET['option_name']; ?>" />
+			<input type="hidden" name="option_name_save" value="<?php echo $option_name; ?>" />
 
 			<br />
 			<div class="float-left">
@@ -194,7 +201,7 @@
 		<div class="delete-button delete-button-account">
 			<form method="post">
 				<input name="delete" class="delete-button" value="Delete account" type="submit" onclick="return confirm('Are you sure?')" />
-				<input type="hidden" name="delete_account" value="<?php echo $_GET['option_name']; ?>" />
+				<input type="hidden" name="delete_account" value="<?php echo $option_name; ?>" />
 			</form>
 		</div>
 

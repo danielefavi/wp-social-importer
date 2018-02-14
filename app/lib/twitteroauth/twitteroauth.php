@@ -1,4 +1,5 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 /*
  * Abraham Williams (abraham@abrah.am) http://abrah.am
@@ -23,7 +24,7 @@ if (!class_exists('TwitterOAuth')) {
 	  /* Set timeout default. */
 	  public $timeout = 30;
 	  /* Set connect timeout. */
-	  public $connecttimeout = 30; 
+	  public $connecttimeout = 30;
 	  /* Verify SSL Cert. */
 	  public $ssl_verifypeer = FALSE;
 	  /* Respons format. */
@@ -36,10 +37,10 @@ if (!class_exists('TwitterOAuth')) {
 	  public $useragent = 'TwitterOAuth v0.2.0-beta2';
 	  /* Immediately retry the API call if the response was not successful. */
 	  //public $retry = TRUE;
-	
-	
-	
-	
+
+
+
+
 	  /**
 	   * Set API URLS
 	   */
@@ -47,13 +48,13 @@ if (!class_exists('TwitterOAuth')) {
 	  function authenticateURL() { return 'https://api.twitter.com/oauth/authenticate'; }
 	  function authorizeURL()    { return 'https://api.twitter.com/oauth/authorize'; }
 	  function requestTokenURL() { return 'https://api.twitter.com/oauth/request_token'; }
-	
+
 	  /**
 	   * Debug helpers
 	   */
 	  function lastStatusCode() { return $this->http_status; }
 	  function lastAPICall() { return $this->last_api_call; }
-	
+
 	  /**
 	   * construct TwitterOAuth object
 	   */
@@ -66,8 +67,8 @@ if (!class_exists('TwitterOAuth')) {
 	      $this->token = NULL;
 	    }
 	  }
-	
-	
+
+
 	  /**
 	   * Get a request_token from Twitter
 	   *
@@ -75,13 +76,13 @@ if (!class_exists('TwitterOAuth')) {
 	   */
 	  function getRequestToken($oauth_callback) {
 	    $parameters = array();
-	    $parameters['oauth_callback'] = $oauth_callback; 
+	    $parameters['oauth_callback'] = $oauth_callback;
 	    $request = $this->oAuthRequest($this->requestTokenURL(), 'GET', $parameters);
 	    $token = OAuthUtil::parse_parameters($request);
 	    $this->token = new OAuthConsumer($token['oauth_token'], $token['oauth_token_secret']);
 	    return $token;
 	  }
-	
+
 	  /**
 	   * Get the authorize URL
 	   *
@@ -97,7 +98,7 @@ if (!class_exists('TwitterOAuth')) {
 	       return $this->authenticateURL() . "?oauth_token={$token}";
 	    }
 	  }
-	
+
 	  /**
 	   * Exchange request token and secret for an access token and
 	   * secret, to sign API calls.
@@ -115,7 +116,7 @@ if (!class_exists('TwitterOAuth')) {
 	    $this->token = new OAuthConsumer($token['oauth_token'], $token['oauth_token_secret']);
 	    return $token;
 	  }
-	
+
 	  /**
 	   * One time exchange of username and password for access token and secret.
 	   *
@@ -124,7 +125,7 @@ if (!class_exists('TwitterOAuth')) {
 	   *                "user_id" => "9436992",
 	   *                "screen_name" => "abraham",
 	   *                "x_auth_expires" => "0")
-	   */  
+	   */
 	  function getXAuthToken($username, $password) {
 	    $parameters = array();
 	    $parameters['x_auth_username'] = $username;
@@ -135,7 +136,7 @@ if (!class_exists('TwitterOAuth')) {
 	    $this->token = new OAuthConsumer($token['oauth_token'], $token['oauth_token_secret']);
 	    return $token;
 	  }
-	
+
 	  /**
 	   * GET wrapper for oAuthRequest.
 	   */
@@ -146,7 +147,7 @@ if (!class_exists('TwitterOAuth')) {
 	    }
 	    return $response;
 	  }
-	  
+
 	  /**
 	   * POST wrapper for oAuthRequest.
 	   */
@@ -157,7 +158,7 @@ if (!class_exists('TwitterOAuth')) {
 	    }
 	    return $response;
 	  }
-	
+
 	  /**
 	   * DELETE wrapper for oAuthReqeust.
 	   */
@@ -168,7 +169,7 @@ if (!class_exists('TwitterOAuth')) {
 	    }
 	    return $response;
 	  }
-	
+
 	  /**
 	   * Format and sign an OAuth / API request
 	   */
@@ -185,7 +186,7 @@ if (!class_exists('TwitterOAuth')) {
 	      return $this->http($request->get_normalized_http_url(), $method, $request->to_postdata());
 	    }
 	  }
-	
+
 	  /**
 	   * Make an HTTP request
 	   *
@@ -203,7 +204,7 @@ if (!class_exists('TwitterOAuth')) {
 	    curl_setopt($ci, CURLOPT_SSL_VERIFYPEER, $this->ssl_verifypeer);
 	    curl_setopt($ci, CURLOPT_HEADERFUNCTION, array($this, 'getHeader'));
 	    curl_setopt($ci, CURLOPT_HEADER, FALSE);
-	
+
 	    switch ($method) {
 	      case 'POST':
 	        curl_setopt($ci, CURLOPT_POST, TRUE);
@@ -217,7 +218,7 @@ if (!class_exists('TwitterOAuth')) {
 	          $url = "{$url}?{$postfields}";
 	        }
 	    }
-	
+
 	    curl_setopt($ci, CURLOPT_URL, $url);
 	    $response = curl_exec($ci);
 	    $this->http_code = curl_getinfo($ci, CURLINFO_HTTP_CODE);
@@ -226,7 +227,7 @@ if (!class_exists('TwitterOAuth')) {
 	    curl_close ($ci);
 	    return $response;
 	  }
-	
+
 	  /**
 	   * Get the header info to store.
 	   */

@@ -1,11 +1,16 @@
 <?php
+	if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
+
 	wp_enqueue_style('aioi-style', plugins_url('css/aioi_style.css',__FILE__));
 	$account = null;
 	$hide = false;
 
 
 	if ( isset($_GET['option_name']) and (strpos($_GET['option_name'], 'aioi_importer_account_') !== false) ) {
-		$account = get_option($_GET['option_name']);
+		$option_name = aioifeed_sanitize($_GET['option_name']);
+
+		$account = get_option($option_name);
 
 		/*
 		 * Saving Instagram access_token in callback
@@ -14,8 +19,10 @@
 		 * The solution is make the client read the fragmented url
 		 */
 		if (isset($_GET['aioi_inst_at']) and !empty($account) and (!isset($_GET['token_redirected']))) {
+
 			if (isset($_POST['hash'])) {
-				$hash = $_POST['hash'];
+				$hash = aioifeed_sanitize($_POST['hash']);
+
 				if (strpos($hash, 'access_token=') !== false) {
 					$ex = explode('access_token=', $hash);
 					if (count($ex) == 2) {
@@ -27,17 +34,18 @@
 							$account['token'] = $ex[0];
 						}
 
-						update_option($_GET['option_name'], $account);
+						update_option($option_name, $account);
 					}
 				}
-			}
+			} // end if (isset($_POST['hash']))
+
 			else if (isset($_GET['code']) and ($account['token'] != $_GET['code'])) {
-				$account['token'] = $_GET['code'];
-				update_option($_GET['option_name'], $account);
+				$account['token'] = aioifeed_sanitize($_GET['code']);
+				update_option($option_name, $account);
 			}
 			else if (isset($_GET['access_token']) and ($account['token'] != $_GET['access_token'])) {
-				$account['token'] = $_GET['access_token'];
-				update_option($_GET['option_name'], $account);
+				$account['token'] = aioifeed_sanitize($_GET['access_token']);
+				update_option($option_name, $account);
 			}
 			else {
 				$hide = true;
@@ -67,8 +75,6 @@
 				<?php
 			}
 
-
-
 		}
 	}
 	else {
@@ -94,12 +100,17 @@ if (!$hide) {
 	// default parameters
 	//$parameters['to_date'] = !empty($_POST['to_date']) ? $_POST['to_date'] : date('Y-m-d');
 	//$parameters['from_date'] = !empty($_POST['from_date']) ? $_POST['from_date'] : date('Y-m-d', strtotime(date('Y-m-d') . ' -30 days'));
-	$parameters['number_of_post'] = !empty($_POST['number_of_post']) ? $_POST['number_of_post'] : 100;
+	if (isset($_POST['number_of_post'])) {
+		$nop = aioifeed_sanitize($_POST['number_of_post'], 'absint');
+		$parameters['number_of_post'] = (($nop > 1) and ($nop < 200)) ? $nop : 50;
+	}
+	else $parameters['number_of_post'] = 50;
 
 
 	if (isset($_POST['perform_import']) or isset($_POST['perform_import_head'])) {
 		if (!empty($_POST['aioi_import_chk'])) {
-			$response_import = $api->importPosts($_POST['aioi_import_chk'], $parameters);
+			$social_post_ids = aioifeed_sanitize($_POST['aioi_import_chk'], 'array_of_str');
+			$response_import = $api->importPosts($social_post_ids, $parameters);
 		}
 	}
 
@@ -116,7 +127,7 @@ if (!$hide) {
 
 		<p class="go-back-link">
 			<a href="<?php menu_page_url('accounts-aio-importer'); ?>" class="button">Back to Account List</a>
-			<a href="<?php menu_page_url('accounts-edit-aio-importer'); ?>&option_name=<?php echo $_GET['option_name']; ?>" class="button button-primary button-large">Edit this account</a>
+			<a href="<?php menu_page_url('accounts-edit-aio-importer'); ?>&option_name=<?php echo $option_name; ?>" class="button button-primary button-large">Edit this account</a>
 		</p>
 
 		<div class="clear"></div>
@@ -169,14 +180,16 @@ if (!$hide) {
 				<small>N. of posts:</small><br />
 				<input type="number" name="number_of_post" id="number_of_post" value="<?php echo $parameters['number_of_post']; ?>" />
 			</div>
-			<!-- div class="search-field">
+			<?php /*
+			<div class="search-field">
 				<small>From:</small><br />
 				<input type="text" name="from_date" id="from_date" value="<?php echo $parameters['from_date']; ?>" />
 			</div>
 			<div class="search-field">
 				<small>To:</small><br />
 				<input type="text" name="to_date" id="to_date" value="<?php echo $parameters['to_date']; ?>" />
-			</div -->
+			</div>
+			*/ ?>
 
 			<div class="search-field">
 				<small>&nbsp;</small><br />
@@ -232,16 +245,16 @@ if (!$hide) {
 
 									?>
 										<tr>
-											<td class="hide-mobile hide-tablet"><?php echo $res['id']; ?></td>
-											<td class="hide-mobile hide-tablet"><?php echo $res['created_at']; ?></td>
-											<td><?php echo $prev_title; ?></td>
-											<td class="hide-mobile"><?php echo $prev_post; ?></td>
+											<td class="hide-mobile hide-tablet"><?php echo esc_html($res['id']); ?></td>
+											<td class="hide-mobile hide-tablet"><?php echo esc_html($res['created_at']); ?></td>
+											<td><?php echo esc_html($prev_title); ?></td>
+											<td class="hide-mobile"><?php echo esc_html($prev_post); ?></td>
 											<td class="hide-mobile">
 												<?php
 													if (!empty($res['featured_image'])) {
 														?>
-															<a href="<?php echo $res['featured_image']; ?>" target="_blank">
-																<img src="<?php echo $res['featured_image']; ?>" />
+															<a href="<?php echo esc_html($res['featured_image']); ?>" target="_blank">
+																<img src="<?php echo esc_html($res['featured_image']); ?>" />
 															</a>
 														<?php
 													}
@@ -253,10 +266,10 @@ if (!$hide) {
 													$br = null;
 													if (!empty($res['original_url'])) {
 														$br = '<br /><br class="show-mobile" />';
-														echo '<a href="'.$res['original_url'].'" target="_blank">Original Post</a>';
+														echo '<a href="'.esc_html($res['original_url']).'" target="_blank">Original Post</a>';
 													}
 													if (!empty($res['link_url']))
-														echo $br . '<a href="'.$res['link_url'].'" target="_blank">Related Link</a>'
+														echo $br . '<a href="'.esc_html($res['link_url']).'" target="_blank">Related Link</a>'
 												?>
 											</td>
 											<td class="hide-mobile">
@@ -271,7 +284,9 @@ if (!$hide) {
 												?>
 											</td>
 											<td>
-												<input type="checkbox" name="aioi_import_chk[]" class="aioi_import_chk_list" value="<?php echo $res['id']; ?>" />
+												<?php if (!$post) { ?>
+													<input type="checkbox" name="aioi_import_chk[]" class="aioi_import_chk_list" value="<?php echo $res['id']; ?>" />
+												<?php } ?>
 											</td>
 										</tr>
 									<?php
