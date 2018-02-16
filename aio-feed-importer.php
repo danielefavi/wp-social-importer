@@ -12,9 +12,14 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
     Text Domain: aio-wp-social-importer
 */
 
+/*
+	TODO: add nonce check
+	TODO: make delete account / edit account nicer
+*/
 
-//ini_set('display_errors', 'On');
-//error_reporting(E_ALL | E_STRICT);
+// for testing
+// ini_set('display_errors', 'On');
+// error_reporting(E_ALL | E_STRICT);
 
 
 // creating the menu entry on the wordpress administration panel
@@ -642,16 +647,49 @@ function aioifeed_get_facebook_external_url_param($url) {
 }
 
 
-// Handy function for the development
-function dd($content=null, $stop=true) {
-	echo '<pre>';
-	print_r($content);
-	echo '</pre>';
 
-	if ($stop) die();
+/**
+ * Nonce securety check: break the application flow if the nonce is not right.
+ *
+ * @param string $action
+ * @return void
+ */
+function aioi_nonce_check($action)
+{
+	$nonce = isset($_REQUEST['_wpnonce']) ? $_REQUEST['_wpnonce'] : null;
+	if (!$nonce or !wp_verify_nonce($nonce, $action) ) die( 'Failed security check' );
 }
-function cc($content=null) {
-	echo ' <!-- TEST TEST TEST ';
-	print_r($content);
-	echo ' --> ';
+
+
+
+/**
+ * Return the current full url. If the NONCE action is specified it will return
+ * the current url with the nonce parameter attached.
+ *
+ * @param string $nonce_action
+ * @return string
+ */
+function aioi_current_url($nonce_action=null)
+{
+	$url = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
+
+	if ($nonce_action) return wp_nonce_url($url, $nonce_action);
+
+	return $url;
 }
+
+
+
+// Handy function for the development
+// function dd($content=null, $stop=true) {
+// 	echo '<pre>';
+// 	print_r($content);
+// 	echo '</pre>';
+//
+// 	if ($stop) die();
+// }
+// function cc($content=null) {
+// 	echo ' <!-- TEST TEST TEST ';
+// 	print_r($content);
+// 	echo ' --> ';
+// }

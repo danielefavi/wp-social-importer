@@ -49,7 +49,7 @@
 			}
 			else {
 				$hide = true;
-				$current_url = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
+				$current_url =  aioi_current_url();
 
 				?>
 					<script>

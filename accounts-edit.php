@@ -37,6 +37,7 @@
 	else {
 		// this is executed when the user press the SAVE ACCOUNT button
 		if (isset($_POST['option_name_save'])) {
+			aioi_nonce_check('aioi_edit_action');
 
 			$error = false;
 
@@ -79,6 +80,9 @@
 
 		// in case the user pressed the DELETE ACCOUNT button
 		else if (isset($_POST['delete_account'])) {
+			// nonce security check
+			aioi_nonce_check('aioi_delete_action');
+
 			delete_option($option_name);
 
 			// redirecting to the account list after 5 seconds
@@ -134,6 +138,8 @@
 		?>
 
 		<form method="post">
+			<?php wp_nonce_field('aioi_edit_action'); ?>
+
 			<p><strong>Slug:</strong> <?php echo esc_html($account['aioi_slug']); ?></p>
 			<p><strong>Social:</strong> <?php echo ucwords( esc_html($account['aioi_social_type']) ); ?></p>
 			<p><strong>Created:</strong> <?php echo esc_html($account['aioi_created']); ?></p>
@@ -200,6 +206,7 @@
 
 		<div class="delete-button delete-button-account">
 			<form method="post">
+				<?php wp_nonce_field('aioi_delete_action'); ?>
 				<input name="delete" class="delete-button" value="Delete account" type="submit" onclick="return confirm('Are you sure?')" />
 				<input type="hidden" name="delete_account" value="<?php echo $option_name; ?>" />
 			</form>
