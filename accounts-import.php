@@ -19,8 +19,12 @@
 		 * The solution is make the client read the fragmented url
 		 */
 		if (isset($_GET['aioi_inst_at']) and !empty($account) and (!isset($_GET['token_redirected']))) {
+			// checking the nonce security code on the URL
+			if (! check_ajax_referer( 'nonce_action_token', 'security' )) aioi_nonce_check('nonce_action_token');
 
 			if (isset($_POST['hash'])) {
+				check_ajax_referer( 'nonce_action_token', 'security' );
+
 				$hash = aioifeed_sanitize($_POST['hash']);
 
 				if (strpos($hash, 'access_token=') !== false) {
@@ -50,7 +54,6 @@
 			else {
 				$hide = true;
 				$current_url =  aioi_current_url();
-
 				?>
 					<script>
 						jQuery(document).ready(function() {
@@ -58,7 +61,7 @@
 							jQuery.ajax({
 								url: '<?php echo $current_url; ?>',
 								type: "POST",
-								data : { hash : window.location.hash },
+								data : { hash : window.location.hash , security: '<?php echo wp_create_nonce('nonce_action_token'); ?>', },
 								success: function () {
 									window.location.href = '<?php echo $current_url .= '&token_redirected=success'; ?>';
 								},

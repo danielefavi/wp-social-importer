@@ -239,6 +239,7 @@ class aioi_instagram {
 		$url .= '&scope=public_content';
 		//$url .= '&response_type=code';
 
+		return wp_nonce_url($url, 'nonce_action_token');
 		return $url;
 	}
 
@@ -251,7 +252,9 @@ class aioi_instagram {
 	 * @return string
 	 */
 	public function getCallbackUrl($urlencoded=true) {
-		$redirect_url = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
+		// taking the current url and appending to it the wp security nonce
+		$redirect_url = aioi_current_url('nonce_action_token');
+
 		$redirect_url .= (strpos($redirect_url, '?') !== false) ? '&' : '?';
 		$redirect_url .= 'aioi_inst_at=1';
 

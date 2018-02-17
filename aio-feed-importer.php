@@ -13,7 +13,6 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 */
 
 /*
-	TODO: add nonce check
 	TODO: make delete account / edit account nicer
 */
 
@@ -140,11 +139,11 @@ function aioifeed_sanitize($elem, $type=null)
 			}
 		}
 
-		return $sanitized;
+		return trim($sanitized);
 	}
 
 	// if the type is not specified it returns the element sanitized
-	return sanitize_text_field( $elem );
+	return trim(sanitize_text_field( $elem ));
 }
 
 

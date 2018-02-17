@@ -1,7 +1,7 @@
 <?php
 	if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-	
+
 	class Request
 	{
 		var $_fp;
@@ -40,7 +40,7 @@
 		}
 
 		//constructor
-		function Request($url)
+		function __construct($url)
 		{
 			$this->_url = $url;
 			$this->_scan_url();
