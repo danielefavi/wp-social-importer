@@ -141,7 +141,7 @@ Then copy the  <strong>Client ID</strong> and <strong>Client Secret</strong>
 <strong>6)</strong> Now open your website and go to the wordpress administration; then click on the link <strong>Social Importer</strong> on the left menu.
 </p>
 <p>
-<strong>7)</strong> On the importer page you will see the box <strong>Add new account</strong> on the top-right: there from the <strong>Select a social network type</strong> section choose <strong>Instagram</strong> from the dropdown menu. 
+<strong>7)</strong> On the importer page you will see the box <strong>Add new account</strong> on the top-right: there from the <strong>Select a social network type</strong> section choose <strong>Instagram</strong> from the dropdown menu.
 <br />
 Give a name to the account and fill in <strong>Client ID</strong> and <strong>Client Secret</strong> with the Instagram web app you have just created and then click on the button <strong>Save Instagram Account</strong>
 </p>
@@ -219,10 +219,9 @@ Give a name to this account, fill up the <strong>API Key</strong> and <strong>AP
 </p>
 
 <p align="center">
-<img src="https://www.danielefavi.com/wp-content/uploads/2018/02/04.png" alt="WP Social Post Importer - Twitter account" width="343" height="891" class="aligncenter size-full wp-image-566" />
+<img src="https://www.danielefavi.com/wp-content/uploads/2018/02/06-1.png" alt="WP Social Post Importer - Twitter account" width="343" height="891" class="aligncenter size-full wp-image-566" />
 </p>
 
 <p>
 NOTE: if the field <strong>Twitter user (screen name)</strong> is not correct you will get the error <strong>Not Authorized</strong>
 </p>
-	
