@@ -101,6 +101,8 @@ if (!$hide) {
 	//$parameters['to_date'] = !empty($_POST['to_date']) ? $_POST['to_date'] : date('Y-m-d');
 	//$parameters['from_date'] = !empty($_POST['from_date']) ? $_POST['from_date'] : date('Y-m-d', strtotime(date('Y-m-d') . ' -30 days'));
 	if (isset($_POST['number_of_post'])) {
+		aioi_nonce_check('aioi_search_import_form');
+
 		$nop = aioifeed_sanitize($_POST['number_of_post'], 'absint');
 		$parameters['number_of_post'] = (($nop > 1) and ($nop < 200)) ? $nop : 50;
 	}
@@ -109,6 +111,8 @@ if (!$hide) {
 
 	if (isset($_POST['perform_import']) or isset($_POST['perform_import_head'])) {
 		if (!empty($_POST['aioi_import_chk'])) {
+			aioi_nonce_check('aioi_search_import_form');
+
 			$social_post_ids = aioifeed_sanitize($_POST['aioi_import_chk'], 'array_of_str');
 			$response_import = $api->importPosts($social_post_ids, $parameters);
 		}
@@ -176,6 +180,8 @@ if (!$hide) {
 
 	<div class="search-bar">
 		<form method="post" name="search_form">
+			<?php wp_nonce_field('aioi_search_import_form'); ?>
+
 			<div class="search-field">
 				<small>N. of posts:</small><br />
 				<input type="number" name="number_of_post" id="number_of_post" value="<?php echo $parameters['number_of_post']; ?>" />
@@ -209,7 +215,6 @@ if (!$hide) {
 			?>
 
 				<form method="post" name="import_posts" id="import_posts">
-
 					<div class="search-field-right">
 						<small>&nbsp;</small><br />
 						<input name="perform_import_head" id="perform_import_head" class="button button-primary button-large" value="Import selected" type="submit" />
@@ -320,6 +325,7 @@ if (!$hide) {
 						}
 					?>
 
+					<?php wp_nonce_field('aioi_search_import_form'); ?>
 				</form>
 
 				<script>

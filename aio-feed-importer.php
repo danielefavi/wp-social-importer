@@ -18,8 +18,8 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 */
 
 // for testing
-// ini_set('display_errors', 'On');
-// error_reporting(E_ALL | E_STRICT);
+ini_set('display_errors', 'On');
+error_reporting(E_ALL | E_STRICT);
 
 
 // creating the menu entry on the wordpress administration panel
@@ -681,15 +681,15 @@ function aioi_current_url($nonce_action=null)
 
 
 // Handy function for the development
-// function dd($content=null, $stop=true) {
-// 	echo '<pre>';
-// 	print_r($content);
-// 	echo '</pre>';
-//
-// 	if ($stop) die();
-// }
-// function cc($content=null) {
-// 	echo ' <!-- TEST TEST TEST ';
-// 	print_r($content);
-// 	echo ' --> ';
-// }
+function dd($content=null, $stop=true) {
+	echo '<pre>';
+	print_r($content);
+	echo '</pre>';
+
+	if ($stop) die();
+}
+function cc($content=null) {
+	echo ' <!-- TEST TEST TEST ';
+	print_r($content);
+	echo ' --> ';
+}

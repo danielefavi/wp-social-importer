@@ -10,6 +10,8 @@ $accounts = aioifeed_get_socials();
 
 
 if (isset($_POST['social_type'])) {
+	aioi_nonce_check('aioi_create_account');
+
 	$error = false;
 
 	if (!empty($_POST['required_fields'])) {
@@ -157,53 +159,54 @@ $sn_fields = aioifeed_get_social_structure();
 													}
 												?>
 												<form method="post" name="<?php echo $social_name; ?>">
-														<p>
-															<strong><span class="required-star"> * </span>Name</strong>
-															<br />
-															<input type="text" id="name" name="aioi_name" />
-															<input type="hidden" name="required_fields[]" value="aioi_name" />
-														</p>
-														<p>
-															<strong>Assign post type</strong>
-															<br />
-															<?php echo $html_select_post_types; ?>
-														</p>
-														<p>
-															<strong>Import with post status</strong>
-															<br />
-															<?php echo aioifeed_get_select('aioi_post_status', 'post_status'); ?>
-														</p>
-														<p>
-															<strong>Import with comments</strong>
-															<br />
-															<?php echo aioifeed_get_select('aioi_post_comments', 'post_comments'); ?>
-														</p>
+													<?php wp_nonce_field('aioi_create_account'); ?>
+													<p>
+														<strong><span class="required-star"> * </span>Name</strong>
+														<br />
+														<input type="text" id="name" name="aioi_name" />
+														<input type="hidden" name="required_fields[]" value="aioi_name" />
+													</p>
+													<p>
+														<strong>Assign post type</strong>
+														<br />
+														<?php echo $html_select_post_types; ?>
+													</p>
+													<p>
+														<strong>Import with post status</strong>
+														<br />
+														<?php echo aioifeed_get_select('aioi_post_status', 'post_status'); ?>
+													</p>
+													<p>
+														<strong>Import with comments</strong>
+														<br />
+														<?php echo aioifeed_get_select('aioi_post_comments', 'post_comments'); ?>
+													</p>
 
-														<?php
-															foreach($fieldset as $field) {
-																$required_html = $hint_html = '';
-																if ($field['required']) {
-																	$required_html = '<span class="required-star"> * </span>';
-																	?>
-																		<input type="hidden" name="required_fields[]" value="aioi_field_<?php echo $field['name']; ?>" />
-																	<?php
-																}
-																if (!empty($field['hint'])) $hint_html = '<small><br />'.$field['hint'].'</small>';
+													<?php
+														foreach($fieldset as $field) {
+															$required_html = $hint_html = '';
+															if ($field['required']) {
+																$required_html = '<span class="required-star"> * </span>';
 																?>
-																	<p>
-																		<strong><?php echo $required_html . $field['label']; ?></strong>
-																		<br />
-																		<input type="<?php echo $field['type']; ?>" id="<?php echo $field['name']; ?>" name="aioi_field_<?php echo $field['name']; ?>" class="<?php echo $field['class']; ?>" />
-																		<?php echo $hint_html; ?>
-																	</p>
+																	<input type="hidden" name="required_fields[]" value="aioi_field_<?php echo $field['name']; ?>" />
 																<?php
 															}
-														?>
-														<input type="hidden" name="social_type" value="<?php echo $social_name; ?>" />
+															if (!empty($field['hint'])) $hint_html = '<small><br />'.$field['hint'].'</small>';
+															?>
+																<p>
+																	<strong><?php echo $required_html . $field['label']; ?></strong>
+																	<br />
+																	<input type="<?php echo $field['type']; ?>" id="<?php echo $field['name']; ?>" name="aioi_field_<?php echo $field['name']; ?>" class="<?php echo $field['class']; ?>" />
+																	<?php echo $hint_html; ?>
+																</p>
+															<?php
+														}
+													?>
+													<input type="hidden" name="social_type" value="<?php echo $social_name; ?>" />
 
-														<div class="social-fieldset-submit">
-															<input name="save" class="button button-primary button-large" value="Save <?php echo ucwords($social_name); ?> account" type="submit">
-														</div>
+													<div class="social-fieldset-submit">
+														<input name="save" class="button button-primary button-large" value="Save <?php echo ucwords($social_name); ?> account" type="submit">
+													</div>
 												</form>
 											</div>
 										<?php
