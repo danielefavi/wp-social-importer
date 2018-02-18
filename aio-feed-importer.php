@@ -14,8 +14,8 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 
 // for testing
-ini_set('display_errors', 'On');
-error_reporting(E_ALL | E_STRICT);
+// ini_set('display_errors', 'On');
+// error_reporting(E_ALL | E_STRICT);
 
 
 // creating the menu entry on the wordpress administration panel
@@ -132,15 +132,15 @@ function aioifeed_sanitize($elem, $type=null)
 
 		if (is_array($elem)) {
 			foreach ($elem as $key => $val) {
-				$sanitized[ absint($key) ] = sanitize_text_field( $val );
+				$sanitized[ absint($key) ] = sanitize_text_field( trim($val) );
 			}
 		}
 
-		return trim($sanitized);
+		return $sanitized;
 	}
 
 	// if the type is not specified it returns the element sanitized
-	return trim(sanitize_text_field( $elem ));
+	return sanitize_text_field( trim($elem) );
 }
 
 
@@ -425,7 +425,7 @@ function aioifeed_get_facebook_field_settings()
 			'name' => 'page_id',
 			'type' => 'text',
 			'class' => '',
-			'required' => false,
+			'required' => true,
 			'hint' => false,
 		)
 	);
@@ -806,15 +806,15 @@ function aioi_update_social_details_from_post($account, $post)
 
 
 // Handy function for the development
-function dd($content=null, $stop=true) {
-	echo '<pre>';
-	print_r($content);
-	echo '</pre>';
-
-	if ($stop) die();
-}
-function cc($content=null) {
-	echo ' <!-- TEST TEST TEST ';
-	print_r($content);
-	echo ' --> ';
-}
+// function dd($content=null, $stop=true) {
+// 	echo '<pre>';
+// 	print_r($content);
+// 	echo '</pre>';
+//
+// 	if ($stop) die();
+// }
+// function cc($content=null) {
+// 	echo ' <!-- TEST TEST TEST ';
+// 	print_r($content);
+// 	echo ' --> ';
+// }

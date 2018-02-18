@@ -45,7 +45,7 @@ First of all we have to create a Facebook app in order to create an App ID and a
 </p>
 
 <p>
-<strong>4)</strong> From the left menu click on <strong>Settings > Basic</strong> and on the page that will appear click <strong>Add new platform</strong>at the bottom of the page
+<strong>4)</strong> From the left menu click on <strong>Settings > Basic</strong> and on the page that will appear click <strong>Add new platform</strong> at the bottom of the page
 </p>
 
 <p align="center">

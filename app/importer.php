@@ -117,7 +117,6 @@ class Importer {
 			} // end foreach $to_import
 		} // end if $to_import['data'] is setted
 
-
 		return $created_wp_ids;
 	}
 
@@ -133,6 +132,11 @@ class Importer {
 	protected function storePost($sn_post)
 	{
 		extract( $this->getPostImportSettings($sn_post['id']) );
+
+		// if title or post content is empty wordpress will not create the post.
+		// So it creates a title and a content.
+		if (empty($sn_post['title'])) $sn_post['title'] = '#' . ucwords($aioi_post_type);
+		if (empty($sn_post['post'])) $sn_post['post'] = ' &nbsp; ';
 
 		// saving the post
 		$data = array(
