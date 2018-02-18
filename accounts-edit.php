@@ -42,39 +42,18 @@
 			$error = false;
 
 			// checking if the required fields are completed
-			if (!empty($_POST['required_fields'])) {
-
-				foreach($_POST['required_fields'] as $req_field) {
-					if (empty($_POST[$req_field])) {
-						$message['result'] = 'error';
-						$message['message'] = 'Please fill up all the required fields marked with a red star.';
-						$message['details'] = null;
-						$error = true;
-					}
-				}
-
+			if ($error_message = aioi_check_required_fields_on_post($_POST)) {
+				$message['result'] = 'error';
+				$message['message'] = $error_message;
+				$message['details'] = null;
+				$error = true;
 			}
 
 			// if no errors occurred let's save
 			if (!$error) {
-				$account['aioi_name'] = aioifeed_sanitize($_POST['aioi_name']);
-				$account['aioi_post_type'] = aioifeed_sanitize($_POST['aioi_post_type']);
-				$account['aioi_post_status'] = aioifeed_sanitize($_POST['aioi_post_status']);
-				$account['aioi_post_comments'] = aioifeed_sanitize($_POST['aioi_post_comments']);
-				$account['aioi_categories'] = aioifeed_sanitize($_POST['aioi_categories']);
+				$message = aioi_update_social_details_from_post($account, $_POST);
 
-				foreach ($_POST as $key => $value) {
-					if (strpos($key, 'aioi_field_') !== false) {
-						$key = str_replace('aioi_field_', '', aioifeed_sanitize($key));
-						$account[$key] = aioifeed_sanitize($value);
-					}
-				}
-				update_option( aioifeed_sanitize($_POST['option_name_save']), $account);
 				$account = get_option( $option_name );
-
-				$message['result'] = 'success';
-				$message['message'] = 'Account saved successfully';
-				$message['details'] = null;
 			}
 		}
 
@@ -139,6 +118,7 @@
 
 		<form method="post">
 			<?php wp_nonce_field('aioi_edit_action'); ?>
+			<input type="hidden" name="social_type" value="<?php echo esc_html($account['aioi_social_type']) ?>">
 
 			<p><strong>Slug:</strong> <?php echo esc_html($account['aioi_slug']); ?></p>
 			<p><strong>Social:</strong> <?php echo ucwords( esc_html($account['aioi_social_type']) ); ?></p>
@@ -148,7 +128,6 @@
 				<strong><span class="required-star"> * </span>Name</strong>
 				<br />
 				<input type="text" id="slug" name="aioi_name" value="<?php echo esc_html($account['aioi_name']); ?>" />
-				<input type="hidden" name="required_fields[]" value="aioi_name" />
 			</p>
 			<p>
 				<strong>Import with post type</strong>
@@ -180,9 +159,6 @@
 					$field_val = isset($account[$field['name']]) ? $account[$field['name']] : null;
 					if ($field['required']) {
 						$required_html = '<span class="required-star"> * </span>';
-						?>
-							<input type="hidden" name="required_fields[]" value="aioi_field_<?php echo $field['name']; ?>" />
-						<?php
 					}
 					if (!empty($field['hint'])) $hint_html = '<small><br />'.$field['hint'].'</small>';
 

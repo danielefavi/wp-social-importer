@@ -1,7 +1,6 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-
 wp_enqueue_style('aioi-style', plugins_url('css/aioi_style.css',__FILE__));
 
 $success = $error = null;
@@ -12,48 +11,15 @@ $accounts = aioifeed_get_socials();
 if (isset($_POST['social_type'])) {
 	aioi_nonce_check('aioi_create_account');
 
-	$error = false;
-
-	if (!empty($_POST['required_fields'])) {
-		foreach($_POST['required_fields'] as $req_field) {
-			if (empty($_POST[$req_field])) {
-				$error = 'Please fill up all the required fields marked with a red star.';
-			}
-		}
-	}
+	$error = aioi_check_required_fields_on_post($_POST);
 
 	if (!$error) {
-
 		// genereting the slug
 		$slug = aioifeed_create_slug();
-		if (isset($accounts[$slug])) {
-			for($i=0; $i<20; $i++) {
-				$slug = aioifeed_create_slug();
-				break;
-			}
-		}
 
 		if (isset($accounts[$slug])) $error = 'The slug <b>'.$slug.'</b> already exists.';
 		else {
-			// taking all the account details from $_POST
-			$social_details = array();
-			$social_details['aioi_slug'] = $slug;
-			$social_details['aioi_name'] = aioifeed_sanitize($_POST['aioi_name']);
-			$social_details['aioi_post_type'] = aioifeed_sanitize($_POST['aioi_post_type']);
-			$social_details['aioi_social_type'] = aioifeed_sanitize($_POST['social_type']);
-			$social_details['aioi_post_comments'] = aioifeed_sanitize($_POST['aioi_post_comments']);
-			$social_details['aioi_post_status'] = aioifeed_sanitize($_POST['aioi_post_status']);
-			$social_details['aioi_created'] = date('Y-m-d H:i:s');
-
-			foreach ($_POST as $key => $value) {
-				// getting the field which field name starts with aioi_field_
-				if (strpos($key, 'aioi_field_') !== false) {
-					$key = str_replace('aioi_field_', '', aioifeed_sanitize($key));
-					$social_details[$key] = aioifeed_sanitize($value);
-				}
-			}
-
-			update_option($slug, $social_details);
+			aioi_save_social_details_from_post($slug, $_POST);
 
 			$accounts = aioifeed_get_socials();
 		}
@@ -164,7 +130,6 @@ $sn_fields = aioifeed_get_social_structure();
 														<strong><span class="required-star"> * </span>Name</strong>
 														<br />
 														<input type="text" id="name" name="aioi_name" />
-														<input type="hidden" name="required_fields[]" value="aioi_name" />
 													</p>
 													<p>
 														<strong>Assign post type</strong>
@@ -187,9 +152,6 @@ $sn_fields = aioifeed_get_social_structure();
 															$required_html = $hint_html = '';
 															if ($field['required']) {
 																$required_html = '<span class="required-star"> * </span>';
-																?>
-																	<input type="hidden" name="required_fields[]" value="aioi_field_<?php echo $field['name']; ?>" />
-																<?php
 															}
 															if (!empty($field['hint'])) $hint_html = '<small><br />'.$field['hint'].'</small>';
 															?>

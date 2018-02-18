@@ -12,9 +12,6 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
     Text Domain: aio-wp-social-importer
 */
 
-/*
-	TODO: make delete account / edit account nicer
-*/
 
 // for testing
 ini_set('display_errors', 'On');
@@ -251,6 +248,36 @@ function aioifeed_get_social_structure($platform=null) {
 	}
 
 	return $structure;
+}
+
+
+
+/**
+ * Check the required fields are completed.
+ *
+ * @param array $post
+ * @return string|boolean
+ */
+function aioi_check_required_fields_on_post($post)
+{
+	$social_type = sanitize_text_field($post['social_type']);
+	$structure = aioifeed_get_social_structure($social_type);
+
+	if (empty($post['aioi_name'])) {
+		return 'Please fill up all the required fields marked with a red star.';
+	}
+	else if ($structure and isset($structure['fields'])) {
+		foreach($structure['fields'] as $field_struct) {
+			$post_field_name = 'aioi_field_' . $field_struct['name'];
+			if ($field_struct['required'] and empty($post[$post_field_name])) {
+				return 'Please fill up all the required fields marked with a red star.';
+			}
+		}
+	}
+	// the user tried to insert a social network not in the list
+	else return 'Social network not valid!';
+
+	return false;
 }
 
 
@@ -564,7 +591,7 @@ function aioifeed_get_last_feed($slug_account) {
  * @return string
  */
 function aioifeed_create_slug() {
-	$slug = 'aioi_importer_account_'. rand(1,9999) .'_'. time();
+	$slug = 'aioi_importer_account_'. rand(1,9999) .'_'. uniqid();
 	return $slug;
 }
 
@@ -676,6 +703,105 @@ function aioi_current_url($nonce_action=null)
 
 	return $url;
 }
+
+
+
+/**
+ * Helper function: store the access token after the user gave the authorization
+ * to the Instagram app. Instagram give the access token through a hash in the url
+ * eg: http://www..yoursite.com/ ... /wp-admin.php?par=1#access_token=89ewq37987d9821ewq893219
+ * In this case this function receives the string #access_token=89ewq37987d9821ewq893219
+ * as $hash; then it takes that code and stores in the given option.
+ *
+ * @param string $option_name
+ * @param array $account
+ * @param string $hash
+ * @return void
+ */
+function aioi_store_access_token($option_name, $account, $hash)
+{
+	$hash = aioifeed_sanitize($hash);
+
+	if (strpos($hash, 'access_token=') !== false) {
+		$ex = explode('access_token=', $hash);
+		if (count($ex) == 2) {
+			$account['token'] = $ex[1];
+
+			// checking if there are others hashes
+			if (strpos($account['token'], '#') !== false) {
+				$ex = explode('#', $account['token']);
+				$account['token'] = $ex[0];
+			}
+
+			update_option($option_name, $account);
+		}
+	}
+}
+
+
+
+/**
+ * Save the social network details coming from the create account form.
+ *
+ * @param string $slug
+ * @param array $post
+ * @return void
+ */
+function aioi_save_social_details_from_post($slug, $post)
+{
+	// taking all the account details from $post
+	$social_details = array();
+	$social_details['aioi_slug'] = $slug;
+	$social_details['aioi_name'] = aioifeed_sanitize($post['aioi_name']);
+	$social_details['aioi_post_type'] = aioifeed_sanitize($post['aioi_post_type']);
+	$social_details['aioi_social_type'] = aioifeed_sanitize($post['social_type']);
+	$social_details['aioi_post_comments'] = aioifeed_sanitize($post['aioi_post_comments']);
+	$social_details['aioi_post_status'] = aioifeed_sanitize($post['aioi_post_status']);
+	$social_details['aioi_created'] = date('Y-m-d H:i:s');
+
+	foreach ($post as $key => $value) {
+		// getting the field which field name starts with aioi_field_
+		if (strpos($key, 'aioi_field_') !== false) {
+			$key = str_replace('aioi_field_', '', aioifeed_sanitize($key));
+			$social_details[$key] = aioifeed_sanitize($value);
+		}
+	}
+
+	update_option($slug, $social_details);
+}
+
+
+
+/**
+ * Update the social network details coming from the edit page.
+ *
+ * @param array $account
+ * @param array $post
+ * @return void
+ */
+function aioi_update_social_details_from_post($account, $post)
+{
+	$account['aioi_name'] = aioifeed_sanitize($post['aioi_name']);
+	$account['aioi_post_type'] = aioifeed_sanitize($post['aioi_post_type']);
+	$account['aioi_post_status'] = aioifeed_sanitize($post['aioi_post_status']);
+	$account['aioi_post_comments'] = aioifeed_sanitize($post['aioi_post_comments']);
+	$account['aioi_categories'] = aioifeed_sanitize($post['aioi_categories']);
+
+	foreach ($post as $key => $value) {
+		if (strpos($key, 'aioi_field_') !== false) {
+			$key = str_replace('aioi_field_', '', aioifeed_sanitize($key));
+			$account[$key] = aioifeed_sanitize($value);
+		}
+	}
+	update_option( aioifeed_sanitize($post['option_name_save']), $account);
+
+	$message['result'] = 'success';
+	$message['message'] = 'Account saved successfully';
+	$message['details'] = null;
+
+	return $message;
+}
+
 
 
 

@@ -16,31 +16,18 @@
 		 * Saving Instagram access_token in callback
 		 * Intagram gives the access token via URL in callback. The problem is that Instagram puts
 		 * the access_token after an hash so the server cannot read the url fragment after #
-		 * The solution is make the client read the fragmented url
+		 * The solution is make the client read the fragmented url (it means has to be done with javascript
+		 * more info https://stackoverflow.com/questions/2317508/get-fragment-value-after-hash-from-a-url-in-php )
 		 */
 		if (isset($_GET['aioi_inst_at']) and !empty($account) and (!isset($_GET['token_redirected']))) {
 			// checking the nonce security code on the URL
 			if (! check_ajax_referer( 'nonce_action_token', 'security' )) aioi_nonce_check('nonce_action_token');
 
+			// This block is called through ajax and it saves the access token
+			// after the user gave to Instagram its authorization
 			if (isset($_POST['hash'])) {
 				check_ajax_referer( 'nonce_action_token', 'security' );
-
-				$hash = aioifeed_sanitize($_POST['hash']);
-
-				if (strpos($hash, 'access_token=') !== false) {
-					$ex = explode('access_token=', $hash);
-					if (count($ex) == 2) {
-						$account['token'] = $ex[1];
-
-						// checking if there are others hashes
-						if (strpos($account['token'], '#') !== false) {
-							$ex = explode('#', $account['token']);
-							$account['token'] = $ex[0];
-						}
-
-						update_option($option_name, $account);
-					}
-				}
+				aioi_store_access_token($option_name, $account, $_POST['hash']);
 			} // end if (isset($_POST['hash']))
 
 			else if (isset($_GET['code']) and ($account['token'] != $_GET['code'])) {
@@ -52,6 +39,8 @@
 				update_option($option_name, $account);
 			}
 			else {
+				// sending the access token to the server via ajax call: note again
+				// that this operation cannot be done server side.
 				$hide = true;
 				$current_url =  aioi_current_url();
 				?>

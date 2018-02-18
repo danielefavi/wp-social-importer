@@ -89,7 +89,6 @@ class Importer {
 	/**
 	 * Get the selected posts ($ids) from the social network through API
 	 * and it saves them as wordpress post.
-	 * TODO: break down this function!
 	 *
 	 * @param array $ids
 	 * @param mixed $parameters
