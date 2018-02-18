@@ -558,7 +558,7 @@ function aioifeed_get_feeds($slug_accout, $post_number=10) {
 	$account = get_option($slug_accout);
 
 	if (!empty($account)) {
-		$api = new Importer($account);
+		$api = new WpSocialImporter($account);
 		$par['number_of_post'] = $post_number;
 
 		$result = $api->getPosts($par);

@@ -87,7 +87,7 @@ if (!$hide) {
 
 	include_once(plugin_dir_path(__FILE__) . 'app/importer.php');
 
-	$api = new Importer($account);
+	$api = new WpSocialImporter($account);
 
 	// default parameters
 	//$parameters['to_date'] = !empty($_POST['to_date']) ? $_POST['to_date'] : date('Y-m-d');
