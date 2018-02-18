@@ -2,7 +2,7 @@
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 
-class Importer {
+class WpSocialImporter {
 
 	/**
 	 * It contains the object of the importer (Facebook, Instagram or Twitter).
